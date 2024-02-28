@@ -25,6 +25,8 @@ namespace EntFrmLab2
                 Console.WriteLine("8. Відображення команди з найбільшою кількістю забитих голів.");
                 Console.WriteLine("9. Відображення команди з найбільшою кількістю пропущених голів.");
                 Console.WriteLine("10. Додати команду.");
+                Console.WriteLine("11. Обновити дані команди.");
+                Console.WriteLine("12. Видалити команду.");
                 Console.WriteLine("0. Вийти з програми");
 
                 Console.Write("Виберіть опцію: ");
