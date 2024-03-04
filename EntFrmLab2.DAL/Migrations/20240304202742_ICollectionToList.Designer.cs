@@ -4,6 +4,7 @@ using EntFrmLab2.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntFrmLab2.DAL.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20240304202742_ICollectionToList")]
+    partial class ICollectionToList
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,7 +47,7 @@ namespace EntFrmLab2.DAL.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("GoalScorers");
+                    b.ToTable("GoalScorer");
                 });
 
             modelBuilder.Entity("EntFrmLab2.DAL.Models.Match", b =>

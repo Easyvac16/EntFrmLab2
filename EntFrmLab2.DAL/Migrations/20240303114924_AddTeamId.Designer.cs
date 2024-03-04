@@ -4,6 +4,7 @@ using EntFrmLab2.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntFrmLab2.DAL.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20240303114924_AddTeamId")]
+    partial class AddTeamId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,32 +23,6 @@ namespace EntFrmLab2.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("EntFrmLab2.DAL.Models.GoalScorer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("GoalsScored")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MatchId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PlayerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MatchId");
-
-                    b.HasIndex("PlayerId");
-
-                    b.ToTable("GoalScorers");
-                });
 
             modelBuilder.Entity("EntFrmLab2.DAL.Models.Match", b =>
                 {
@@ -149,25 +125,6 @@ namespace EntFrmLab2.DAL.Migrations
                     b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("EntFrmLab2.DAL.Models.GoalScorer", b =>
-                {
-                    b.HasOne("EntFrmLab2.DAL.Models.Match", "Match")
-                        .WithMany("GoalScorers")
-                        .HasForeignKey("MatchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EntFrmLab2.DAL.Models.Player", "Player")
-                        .WithMany()
-                        .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Match");
-
-                    b.Navigation("Player");
-                });
-
             modelBuilder.Entity("EntFrmLab2.DAL.Models.Match", b =>
                 {
                     b.HasOne("EntFrmLab2.DAL.Models.Team", "Team1Id")
@@ -196,11 +153,6 @@ namespace EntFrmLab2.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Team");
-                });
-
-            modelBuilder.Entity("EntFrmLab2.DAL.Models.Match", b =>
-                {
-                    b.Navigation("GoalScorers");
                 });
 
             modelBuilder.Entity("EntFrmLab2.DAL.Models.Team", b =>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EntFrmLab2.DAL.Models
 {
-    public class FootballTeams
+    public class Team
     {
         public int id { get; set; }
         public string TeamName { get; set; }
@@ -16,5 +16,6 @@ namespace EntFrmLab2.DAL.Models
         public int GameTie { get; set; }
         public int ScoredGoals { get; set; }
         public int MissedHeads { get; set; }
+        public List<Player> Players { get; set; }
     }
 }

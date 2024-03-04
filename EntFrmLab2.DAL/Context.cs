@@ -7,7 +7,10 @@ namespace EntFrmLab2.DAL
 {
     public class Context:DbContext
     {
-        public DbSet<FootballTeams> Teams { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<Match> Matches { get; set; }
+        public DbSet<Player> Players { get; set; }
+        public DbSet<GoalScorer> GoalScorers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -20,6 +23,21 @@ namespace EntFrmLab2.DAL
             var connectString = configuration.GetConnectionString("DefaultConnection");
 
             optionsBuilder.UseSqlServer(connectString);
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Match>()
+                .HasOne<Team>(f => f.Team1Id)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Match>()
+                .HasOne<Team>(f => f.Team2Id)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }
