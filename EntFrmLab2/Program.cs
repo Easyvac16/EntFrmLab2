@@ -2,6 +2,7 @@
 using EntFrmLab2.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace EntFrmLab2
 {
@@ -91,6 +92,18 @@ namespace EntFrmLab2
                             break;
                         case 7:
                             DisplayMatchDetails();
+                            break;
+                        case 8:
+                            ShowGoalDifference();
+                            break;
+                        case 9:
+                            ShowMatchesByDate();
+                            break;
+                        case 10:
+                            ShowMatchesByTeam();
+                            break;
+                        case 11:
+                            ShowGoalScorersByDate();
                             break;
                         case 0:
                             Console.WriteLine("Poka!");
@@ -296,6 +309,40 @@ namespace EntFrmLab2
             }
         }
 
+        public static void ShowGoalDifference()
+        {
+            using (var context = new Context())
+            {
+                var teams = context.Teams.ToList();
+
+                foreach (var team in teams)
+                {
+                    int goalsScored = 0;
+                    int goalsConceded = 0;
+
+                    var matches = context.Matches.Where(m => m.Team1Id == team || m.Team2Id == team).ToList();
+
+                    foreach (var match in matches)
+                    {
+                        if (match.Team1Id == team)
+                        {
+                            goalsScored += match.GoalsTeam1;
+                            goalsConceded += match.GoalsTeam2;
+                        }
+                        else
+                        {
+                            goalsScored += match.GoalsTeam2;
+                            goalsConceded += match.GoalsTeam1;
+                        }
+                    }
+
+                    int goalDifference = goalsScored - goalsConceded;
+
+                    Console.WriteLine($"Team: {team.TeamName}, Goals Scored: {goalsScored}, Goals Conceded: {goalsConceded}, Goal Difference: {goalDifference}");
+                }
+            }
+        }
+
         public static void PopulateMatchesTable()
         {
             using (var context = new Context())
@@ -360,7 +407,7 @@ namespace EntFrmLab2
 
             using (var context = new Context())
             {
-                
+
                 var matchToUpdate = context.Matches.Include(m => m.GoalScorers).FirstOrDefault(m => m.Id == matchId);
                 if (matchToUpdate != null)
                 {
@@ -676,6 +723,116 @@ namespace EntFrmLab2
 
             }
         }
+
+        public static void ShowGoalScorersByDate()
+        {
+            Console.WriteLine("Enter Scorers Date (yyyy-MM-dd):");
+            DateTime date;
+            while (!DateTime.TryParse(Console.ReadLine(), out date))
+            {
+                Console.WriteLine("Please enter a valid date in the format yyyy-MM-dd.");
+            }
+            using (var context = new Context())
+            {
+                var goals = context.GoalScorers
+                    .Include(m => m.GoalsScored)
+                    .Where(g => g.Match.MatchDate.Date == date.Date)
+                    .ToList();
+
+                if (goals.Any())
+                {
+                    Console.WriteLine($"Goal scorers on {date.ToShortDateString()}:");
+                    foreach (var goalScorer in goals)
+                    {
+                        if (goalScorer != null)
+                        {
+                            var player = context.Players.FirstOrDefault(p => p.Id == goalScorer.PlayerId);
+                            if (player != null)
+                            {
+                                Console.WriteLine($"Player Name: {player.FullName}, Team: {player.Team.TeamName}, Goals Scored: {goalScorer.GoalsScored}");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Player information not found.");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Encountered null entry in goal scorers list.");
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"No goals scored on {date.ToShortDateString()}.");
+                }
+            }
+        }
+
+        public static void ShowMatchesByDate()
+        {
+            Console.WriteLine("Enter Match Date (yyyy-MM-dd):");
+            DateTime date;
+            while (!DateTime.TryParse(Console.ReadLine(), out date))
+            {
+                Console.WriteLine("Please enter a valid date in the format yyyy-MM-dd.");
+            }
+            using (var context = new Context())
+            {
+                var matches = context.Matches
+                    .Include(m => m.Team1Id)
+                    .Include(m => m.Team2Id)
+                    .Where(m => m.MatchDate.Date == date.Date).ToList();
+
+                if (matches.Any())
+                {
+                    Console.WriteLine($"Matches on {date.ToShortDateString()}:");
+                    foreach (var match in matches)
+                    {
+                        Console.WriteLine($"Match ID: {match.Id}");
+                        Console.WriteLine($"Date: {match.MatchDate}");
+                        Console.WriteLine($"Team 1: {match.Team1Id.TeamName}, Goals: {match.GoalsTeam1}");
+                        Console.WriteLine($"Team 2: {match.Team2Id.TeamName}, Goals: {match.GoalsTeam2}");
+                        Console.WriteLine();
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"No matches found on {date.ToShortDateString()}.");
+                }
+            }
+        }
+        public static void ShowMatchesByTeam()
+        {
+            Console.WriteLine("Enter Team Name:");
+            string teamName = Console.ReadLine();
+            using (var context = new Context())
+            {
+                var matches = context.Matches
+                    .Include(m => m.Team1Id)
+                    .Include(m => m.Team2Id)
+                    .Where(m => m.Team1Id.TeamName == teamName || m.Team2Id.TeamName == teamName)
+                    .ToList();
+
+                if (matches.Any())
+                {
+                    Console.WriteLine($"Matches involving {teamName}:");
+                    foreach (var match in matches)
+                    {
+                        Console.WriteLine($"Match ID: {match.Id}");
+                        Console.WriteLine($"Date: {match.MatchDate}");
+                        Console.WriteLine($"Team 1: {match.Team1Id.TeamName}, Goals: {match.GoalsTeam1}");
+                        Console.WriteLine($"Team 2: {match.Team2Id.TeamName}, Goals: {match.GoalsTeam2}");
+                        Console.WriteLine();
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"No matches found involving {teamName}.");
+                }
+            }
+        }
+
 
 
         public static void DeleteTeam()
