@@ -2,7 +2,6 @@
 using EntFrmLab2.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace EntFrmLab2
 {
@@ -735,31 +734,16 @@ namespace EntFrmLab2
             using (var context = new Context())
             {
                 var goals = context.GoalScorers
-                    .Include(m => m.GoalsScored)
                     .Where(g => g.Match.MatchDate.Date == date.Date)
                     .ToList();
 
                 if (goals.Any())
                 {
                     Console.WriteLine($"Goal scorers on {date.ToShortDateString()}:");
-                    foreach (var goalScorer in goals)
+                    foreach (var goal in goals)
                     {
-                        if (goalScorer != null)
-                        {
-                            var player = context.Players.FirstOrDefault(p => p.Id == goalScorer.PlayerId);
-                            if (player != null)
-                            {
-                                Console.WriteLine($"Player Name: {player.FullName}, Team: {player.Team.TeamName}, Goals Scored: {goalScorer.GoalsScored}");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Player information not found.");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Encountered null entry in goal scorers list.");
-                        }
+                        var player = goal.Player;
+                        Console.WriteLine($"Player: {player.FullName}, Team: {player.Team.TeamName}, Goals Scored: {goal.GoalsScored}");
                     }
                 }
                 else
