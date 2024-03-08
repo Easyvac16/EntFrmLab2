@@ -4,8 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EntFrmLab2
 {
-    public class Service
+    public class Service<TEntity> where TEntity : class
     {
+        private static readonly Repository _repository = new Repository();
 
         /*public static void DisplayTeamWithMostWins()
         {
@@ -174,22 +175,21 @@ namespace EntFrmLab2
 
         public static void ShowData()
         {
-            using (var context = new Context())
+
+            var teams = _repository.GetTeams();
+            foreach (var football in teams)
             {
-                var teams = context.Teams;
-                foreach (var football in teams)
-                {
-                    Console.WriteLine("\n");
-                    Console.WriteLine($"Name:{football.TeamName}");
-                    Console.WriteLine($"City:{football.TeamCity}");
-                    Console.WriteLine($"Wins:{football.GameWin}");
-                    Console.WriteLine($"Loss:{football.GameLoss}");
-                    Console.WriteLine($"Tie's:{football.GameTie}");
-                    Console.WriteLine($"Scored goals:{football.ScoredGoals}");
-                    Console.WriteLine($"Missed Goals:{football.MissedHeads}");
-                    Console.WriteLine("\n");
-                }
+                Console.WriteLine("\n");
+                Console.WriteLine($"Name:{football.TeamName}");
+                Console.WriteLine($"City:{football.TeamCity}");
+                Console.WriteLine($"Wins:{football.GameWin}");
+                Console.WriteLine($"Loss:{football.GameLoss}");
+                Console.WriteLine($"Tie's:{football.GameTie}");
+                Console.WriteLine($"Scored goals:{football.ScoredGoals}");
+                Console.WriteLine($"Missed Goals:{football.MissedHeads}");
+                Console.WriteLine("\n");
             }
+
         }
 
         public static void ShowGoalDifference()
@@ -402,13 +402,8 @@ namespace EntFrmLab2
             Team team = MapDataTeam();
             if (team != null)
             {
-                using (var context = new Context())
-                {
+                _repository.Add(team);
 
-                    context.Teams.Add(team);
-                    context.SaveChanges();
-
-                }
             }
         }
 
