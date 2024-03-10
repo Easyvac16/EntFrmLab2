@@ -70,6 +70,9 @@ namespace EntFrmLab2
                         case 12:
                             service.DeleteMatch();
                             break;
+                        case 13:
+                            service.DisplayTopScorers();
+                            break;
                         case 0:
                             Console.WriteLine("Poka!");
                             break;

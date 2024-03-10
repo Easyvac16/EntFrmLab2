@@ -1,7 +1,6 @@
 ﻿using EntFrmLab2.DAL;
 using EntFrmLab2.DAL.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Channels;
 
 namespace EntFrmLab2
 {
@@ -292,11 +291,9 @@ namespace EntFrmLab2
 
         public void AddGoalScorersToMatch(int matchId)
         {
-
-            using (var context = new Context())
-            {
-
-                var matchToUpdate = context.Matches.Include(m => m.GoalScorers).FirstOrDefault(m => m.Id == matchId);
+                var matchToUpdate = _matchRepository.GetAll()
+                    .AsQueryable()
+                    .Include(m => m.GoalScorers).FirstOrDefault(m => m.Id == matchId);
                 if (matchToUpdate != null)
                 {
                     Console.WriteLine("Enter the number of goal scorers:");
@@ -310,7 +307,7 @@ namespace EntFrmLab2
                         Console.WriteLine($"Enter the number of goals scored by player {playerId}:");
                         int goalsScored = int.Parse(Console.ReadLine());
 
-                        var player = context.Players.FirstOrDefault(p => p.Id == playerId);
+                        var player = _playerRepository.GetAll().AsQueryable().FirstOrDefault(p => p.Id == playerId);
                         if (player != null)
                         {
                             matchToUpdate.GoalScorers.Add(new GoalScorer { Player = player, GoalsScored = goalsScored });
@@ -321,13 +318,13 @@ namespace EntFrmLab2
                         }
                     }
 
-                    context.SaveChanges();
+                    _matchRepository.Update(matchId, matchToUpdate);
                 }
                 else
                 {
                     Console.WriteLine($"Match with id '{matchId}' not found.");
                 }
-            }
+            
         }//s
 
 
@@ -411,6 +408,7 @@ namespace EntFrmLab2
             if (team != null)
             {
                 _teamRepository.Add(team);
+                Console.WriteLine("Team added successfully");
             }
         }
 
@@ -493,6 +491,7 @@ namespace EntFrmLab2
             if (player != null)
             {
                 _playerRepository.Add(player);
+                Console.WriteLine("Player added successfully");
             }
 
         }
@@ -502,79 +501,78 @@ namespace EntFrmLab2
         {
             Console.WriteLine("Football Team Name:");
             string Name = Console.ReadLine();
-            using (var context = new Context())
+
+            var team = GetTeamByName(Name);
+
+            if (team != null)
             {
-                var team = GetTeamByName(Name);
+                Console.WriteLine($"Team '{Name}' found. Select the parameter to change:");
 
-                if (team != null)
+                Console.WriteLine("1. Team Name");
+                Console.WriteLine("2. Team City");
+                Console.WriteLine("3. Number of Wins");
+                Console.WriteLine("4. Number of Losses");
+                Console.WriteLine("5. Number of Draws");
+                Console.WriteLine("6. Goals Scored");
+                Console.WriteLine("7. Goals Conceded");
+
+                Console.Write("Select an option: ");
+                int choice;
+                if (int.TryParse(Console.ReadLine(), out choice))
                 {
-                    Console.WriteLine($"Team '{Name}' found. Select the parameter to change:");
-
-                    Console.WriteLine("1. Team Name");
-                    Console.WriteLine("2. Team City");
-                    Console.WriteLine("3. Number of Wins");
-                    Console.WriteLine("4. Number of Losses");
-                    Console.WriteLine("5. Number of Draws");
-                    Console.WriteLine("6. Goals Scored");
-                    Console.WriteLine("7. Goals Conceded");
-
-                    Console.Write("Select an option: ");
-                    int choice;
-                    if (int.TryParse(Console.ReadLine(), out choice))
+                    switch (choice)
                     {
-                        switch (choice)
-                        {
-                            case 1:
-                                Console.WriteLine("Football Team Name:");
-                                team.Name = Console.ReadLine();
-                                break;
-                            case 2:
-                                Console.WriteLine("Football Team City:");
-                                team.City = Console.ReadLine();
-                                break;
-                            case 3:
-                                Console.WriteLine("Football Team Wins:");
-                                int.TryParse(Console.ReadLine(), out int wins);
-                                team.GameWin = wins;
-                                break;
-                            case 4:
-                                Console.WriteLine("Football Team Losses:");
-                                int.TryParse(Console.ReadLine(), out int losses);
-                                team.GameLoss = losses;
-                                break;
-                            case 5:
-                                Console.WriteLine("Football Team Draws:");
-                                int.TryParse(Console.ReadLine(), out int draws);
-                                team.GameTie = draws;
-                                break;
-                            case 6:
-                                Console.WriteLine("Football Team Goals Scored:");
-                                int.TryParse(Console.ReadLine(), out int scoredGoals);
-                                team.ScoredGoals = scoredGoals;
-                                break;
-                            case 7:
-                                Console.WriteLine("Football Team Goals Conceded:");
-                                int.TryParse(Console.ReadLine(), out int concededGoals);
-                                team.MissedHeads = concededGoals;
-                                break;
-                            default:
-                                Console.WriteLine("Invalid choice.");
-                                break;
-                        }
+                        case 1:
+                            Console.WriteLine("Football Team Name:");
+                            team.Name = Console.ReadLine();
+                            break;
+                        case 2:
+                            Console.WriteLine("Football Team City:");
+                            team.City = Console.ReadLine();
+                            break;
+                        case 3:
+                            Console.WriteLine("Football Team Wins:");
+                            int.TryParse(Console.ReadLine(), out int wins);
+                            team.GameWin = wins;
+                            break;
+                        case 4:
+                            Console.WriteLine("Football Team Losses:");
+                            int.TryParse(Console.ReadLine(), out int losses);
+                            team.GameLoss = losses;
+                            break;
+                        case 5:
+                            Console.WriteLine("Football Team Draws:");
+                            int.TryParse(Console.ReadLine(), out int draws);
+                            team.GameTie = draws;
+                            break;
+                        case 6:
+                            Console.WriteLine("Football Team Goals Scored:");
+                            int.TryParse(Console.ReadLine(), out int scoredGoals);
+                            team.ScoredGoals = scoredGoals;
+                            break;
+                        case 7:
+                            Console.WriteLine("Football Team Goals Conceded:");
+                            int.TryParse(Console.ReadLine(), out int concededGoals);
+                            team.MissedHeads = concededGoals;
+                            break;
+                        default:
+                            Console.WriteLine("Invalid choice.");
+                            break;
+                    }
 
-                        context.SaveChanges();
-                        Console.WriteLine($"Team '{Name}' data updated successfully.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid input.");
-                    }
+                    _teamRepository.Update(team.id, team);
+                    Console.WriteLine($"Team '{Name}' data updated successfully.");
                 }
                 else
                 {
-                    Console.WriteLine($"Team '{Name}' not found.");
+                    Console.WriteLine("Invalid input.");
                 }
             }
+            else
+            {
+                Console.WriteLine($"Team '{Name}' not found.");
+            }
+
         }
 
         public void UpdateMatch()
@@ -582,113 +580,113 @@ namespace EntFrmLab2
             Console.WriteLine("Enter Match ID:");
             int matchId = int.Parse(Console.ReadLine());
 
-            
-                var matchToUpdate = _matchRepository.GetAll().FirstOrDefault(m => m.Id == matchId);
 
-                if (matchToUpdate != null)
+            var matchToUpdate = _matchRepository.GetAll().FirstOrDefault(m => m.Id == matchId);
+
+            if (matchToUpdate != null)
+            {
+                Console.WriteLine($"Match found with ID: {matchId}");
+                Console.WriteLine("Select the parameter to change:");
+                Console.WriteLine("1. Team 1");
+                Console.WriteLine("2. Team 2");
+                Console.WriteLine("3. Goals for Team 1");
+                Console.WriteLine("4. Goals for Team 2");
+                Console.WriteLine("5. Match Date");
+                Console.WriteLine("6. Update Goal Scorers");
+
+                Console.Write("Enter your choice: ");
+                int choice;
+                if (int.TryParse(Console.ReadLine(), out choice))
                 {
-                    Console.WriteLine($"Match found with ID: {matchId}");
-                    Console.WriteLine("Select the parameter to change:");
-                    Console.WriteLine("1. Team 1");
-                    Console.WriteLine("2. Team 2");
-                    Console.WriteLine("3. Goals for Team 1");
-                    Console.WriteLine("4. Goals for Team 2");
-                    Console.WriteLine("5. Match Date");
-                    Console.WriteLine("6. Update Goal Scorers");
-
-                    Console.Write("Enter your choice: ");
-                    int choice;
-                    if (int.TryParse(Console.ReadLine(), out choice))
+                    switch (choice)
                     {
-                        switch (choice)
-                        {
-                            case 1:
-                                Console.WriteLine("Enter new Team 1:");
-                                string team1Name = Console.ReadLine();
-                                var team1 = _teamRepository.GetAll().FirstOrDefault(t => t.Name.ToUpper() == team1Name.ToUpper());
-                                if (team1 != null)
-                                {
-                                    matchToUpdate.Team1 = team1;
-                                    Console.WriteLine("Team 1 updated successfully.");
-                                }
-                                else
-                                {
-                                    Console.WriteLine($"Team '{team1Name}' not found.");
-                                }
-                                break;
-                            case 2:
-                                Console.WriteLine("Enter new Team 2:");
-                                string team2Name = Console.ReadLine();
-                                var team2 = _teamRepository.GetAll().FirstOrDefault(t => t.Name.ToUpper() == team2Name.ToUpper());
-                                if (team2 != null)
-                                {
-                                    matchToUpdate.Team2 = team2;
-                                    Console.WriteLine("Team 2 updated successfully.");
-                                }
-                                else
-                                {
-                                    Console.WriteLine($"Team '{team2Name}' not found.");
-                                }
-                                break;
-                            case 3:
-                                Console.WriteLine("Enter new goals for Team 1:");
-                                int goalsTeam1;
-                                if (int.TryParse(Console.ReadLine(), out goalsTeam1))
-                                {
-                                    matchToUpdate.GoalsTeam1 = goalsTeam1;
-                                    Console.WriteLine("Goals for Team 1 updated successfully.");
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Invalid input. Goals must be a non-negative integer.");
-                                }
-                                break;
-                            case 4:
-                                Console.WriteLine("Enter new goals for Team 2:");
-                                int goalsTeam2;
-                                if (int.TryParse(Console.ReadLine(), out goalsTeam2))
-                                {
-                                    matchToUpdate.GoalsTeam2 = goalsTeam2;
-                                    Console.WriteLine("Goals for Team 2 updated successfully.");
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Invalid input. Goals must be a non-negative integer.");
-                                }
-                                break;
-                            case 5:
-                                Console.WriteLine("Enter new Match Date (yyyy-MM-dd):");
-                                DateTime matchDate;
-                                if (DateTime.TryParse(Console.ReadLine(), out matchDate))
-                                {
-                                    matchToUpdate.MatchDate = matchDate;
-                                    Console.WriteLine("Match Date updated successfully.");
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Invalid input. Please enter a valid date in the format yyyy-MM-dd.");
-                                }
-                                break;
-                            case 6:
-                                UpdateGoalScorers(matchToUpdate);
-                                break;
-                            default:
-                                Console.WriteLine("Invalid choice.");
-                                break;
-                        }
+                        case 1:
+                            Console.WriteLine("Enter new Team 1:");
+                            string team1Name = Console.ReadLine();
+                            var team1 = _teamRepository.GetAll().FirstOrDefault(t => t.Name.ToUpper() == team1Name.ToUpper());
+                            if (team1 != null)
+                            {
+                                matchToUpdate.Team1 = team1;
+                                Console.WriteLine("Team 1 updated successfully.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Team '{team1Name}' not found.");
+                            }
+                            break;
+                        case 2:
+                            Console.WriteLine("Enter new Team 2:");
+                            string team2Name = Console.ReadLine();
+                            var team2 = _teamRepository.GetAll().FirstOrDefault(t => t.Name.ToUpper() == team2Name.ToUpper());
+                            if (team2 != null)
+                            {
+                                matchToUpdate.Team2 = team2;
+                                Console.WriteLine("Team 2 updated successfully.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Team '{team2Name}' not found.");
+                            }
+                            break;
+                        case 3:
+                            Console.WriteLine("Enter new goals for Team 1:");
+                            int goalsTeam1;
+                            if (int.TryParse(Console.ReadLine(), out goalsTeam1))
+                            {
+                                matchToUpdate.GoalsTeam1 = goalsTeam1;
+                                Console.WriteLine("Goals for Team 1 updated successfully.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid input. Goals must be a non-negative integer.");
+                            }
+                            break;
+                        case 4:
+                            Console.WriteLine("Enter new goals for Team 2:");
+                            int goalsTeam2;
+                            if (int.TryParse(Console.ReadLine(), out goalsTeam2))
+                            {
+                                matchToUpdate.GoalsTeam2 = goalsTeam2;
+                                Console.WriteLine("Goals for Team 2 updated successfully.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid input. Goals must be a non-negative integer.");
+                            }
+                            break;
+                        case 5:
+                            Console.WriteLine("Enter new Match Date (yyyy-MM-dd):");
+                            DateTime matchDate;
+                            if (DateTime.TryParse(Console.ReadLine(), out matchDate))
+                            {
+                                matchToUpdate.MatchDate = matchDate;
+                                Console.WriteLine("Match Date updated successfully.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid input. Please enter a valid date in the format yyyy-MM-dd.");
+                            }
+                            break;
+                        case 6:
+                            UpdateGoalScorers(matchToUpdate);
+                            break;
+                        default:
+                            Console.WriteLine("Invalid choice.");
+                            break;
+                    }
 
-                        _matchRepository.Update(matchId, matchToUpdate);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid input.");
-                    }
+                    _matchRepository.Update(matchId, matchToUpdate);
                 }
                 else
                 {
-                    Console.WriteLine($"Match with ID '{matchId}' not found.");
+                    Console.WriteLine("Invalid input.");
                 }
-            
+            }
+            else
+            {
+                Console.WriteLine($"Match with ID '{matchId}' not found.");
+            }
+
         }
 
         public void DeleteMatch()
@@ -905,31 +903,32 @@ namespace EntFrmLab2
         {
             Console.WriteLine("Enter Team Name:");
             string Name = Console.ReadLine();
-            using (var context = new Context())
-            {
-                var matches = context.Matches
-                    .Include(m => m.Team1)
-                    .Include(m => m.Team2)
-                    .Where(m => m.Team1.Name == Name || m.Team2.Name == Name)
-                    .ToList();
 
-                if (matches.Any())
+            var matches = _matchRepository
+            .GetAll()
+            .AsQueryable()
+                .Include(m => m.Team1)
+                .Include(m => m.Team2)
+                .Where(m => m.Team1.Name == Name || m.Team2.Name == Name)
+                .ToList();
+
+            if (matches.Any())
+            {
+                Console.WriteLine($"Matches involving {Name}:");
+                foreach (var match in matches)
                 {
-                    Console.WriteLine($"Matches involving {Name}:");
-                    foreach (var match in matches)
-                    {
-                        Console.WriteLine($"Match ID: {match.Id}");
-                        Console.WriteLine($"Date: {match.MatchDate}");
-                        Console.WriteLine($"Team 1: {match.Team1.Name}, Goals: {match.GoalsTeam1}");
-                        Console.WriteLine($"Team 2: {match.Team2.Name}, Goals: {match.GoalsTeam2}");
-                        Console.WriteLine();
-                    }
-                }
-                else
-                {
-                    Console.WriteLine($"No matches found involving {Name}.");
+                    Console.WriteLine($"Match ID: {match.Id}");
+                    Console.WriteLine($"Date: {match.MatchDate}");
+                    Console.WriteLine($"Team 1: {match.Team1.Name}, Goals: {match.GoalsTeam1}");
+                    Console.WriteLine($"Team 2: {match.Team2.Name}, Goals: {match.GoalsTeam2}");
+                    Console.WriteLine();
                 }
             }
+            else
+            {
+                Console.WriteLine($"No matches found involving {Name}.");
+            }
+
         }
 
 
@@ -938,34 +937,50 @@ namespace EntFrmLab2
         {
             Console.WriteLine("Football Team Name or City:");
             string Name = Console.ReadLine();
-            using (var context = new Context())
+
+            var teamToDelete = _teamRepository.GetAll().FirstOrDefault(t => t.Name.ToUpper() == Name.ToUpper() || t.City.ToUpper() == Name.ToUpper());
+
+            if (teamToDelete != null)
             {
-                var teamToDelete = context.Teams.FirstOrDefault(t => t.Name.ToUpper() == Name.ToUpper() || t.City.ToUpper() == Name.ToUpper());
+                Console.WriteLine($"Team {Name}");
+                Console.Write("Do you want to delete this team? (Y/N): ");
+                string confirmation = Console.ReadLine();
 
-                if (teamToDelete != null)
+                if (confirmation.Equals("Y", StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine($"Team {Name}");
-                    Console.Write("Do you want to delete this team? (Y/N): ");
-                    string confirmation = Console.ReadLine();
-
-                    if (confirmation.Equals("Y", StringComparison.OrdinalIgnoreCase))
-                    {
-                        context.Teams.Remove(teamToDelete);
-                        context.SaveChanges();
-                        Console.WriteLine($"Team '{Name}' deleted successfully.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Deletion cancelled.");
-                    }
+                    _teamRepository.Remove(teamToDelete.id);
+                    Console.WriteLine($"Team '{Name}' deleted successfully.");
                 }
                 else
                 {
-                    Console.WriteLine($"Team '{Name}' not found.");
+                    Console.WriteLine("Deletion cancelled.");
                 }
             }
-        }
+            else
+            {
+                Console.WriteLine($"Team '{Name}' not found.");
+            }
 
+        }
+        public void DisplayTopScorers()
+        {
+            Console.WriteLine("Write Team Name:");
+            string teamName = Console.ReadLine();
+
+            var topScorers = _scorerRepository.GetAll()
+                .Where(s => s.Player.Team.Name == teamName)
+                .GroupBy(s => s.Player)
+                .Select(g => new { Player = g.Key, GoalsScored = g.Sum(s => s.GoalsScored) })
+                .OrderByDescending(g => g.GoalsScored)
+                .Take(3)
+                .ToList();
+
+            Console.WriteLine($"Топ-3 найкращих бомбардирів команди '{teamName}':");
+            foreach (var scorer in topScorers)
+            {
+                Console.WriteLine($"Ім'я: {scorer.Player.FullName}, Кількість забитих м'ячів: {scorer.GoalsScored}");
+            }
+        }
 
     }
 }
