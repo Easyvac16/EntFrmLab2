@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EntFrmLab2.DAL.Migrations
 {
-    public partial class AddTeamId : Migration
+    public partial class ChangeTables : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,8 +15,8 @@ namespace EntFrmLab2.DAL.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TeamName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TeamCity = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     GameLoss = table.Column<int>(type: "int", nullable: false),
                     GameWin = table.Column<int>(type: "int", nullable: false),
                     GameTie = table.Column<int>(type: "int", nullable: false),
@@ -34,8 +34,8 @@ namespace EntFrmLab2.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Team1Idid = table.Column<int>(type: "int", nullable: false),
-                    Team2Idid = table.Column<int>(type: "int", nullable: false),
+                    Team1Id = table.Column<int>(type: "int", nullable: false),
+                    Team2Id = table.Column<int>(type: "int", nullable: false),
                     GoalsTeam1 = table.Column<int>(type: "int", nullable: false),
                     GoalsTeam2 = table.Column<int>(type: "int", nullable: false),
                     MatchDate = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -44,14 +44,14 @@ namespace EntFrmLab2.DAL.Migrations
                 {
                     table.PrimaryKey("PK_Matches", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Matches_Teams_Team1Idid",
-                        column: x => x.Team1Idid,
+                        name: "FK_Matches_Teams_Team1Id",
+                        column: x => x.Team1Id,
                         principalTable: "Teams",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Matches_Teams_Team2Idid",
-                        column: x => x.Team2Idid,
+                        name: "FK_Matches_Teams_Team2Id",
+                        column: x => x.Team2Id,
                         principalTable: "Teams",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
@@ -80,15 +80,52 @@ namespace EntFrmLab2.DAL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Matches_Team1Idid",
-                table: "Matches",
-                column: "Team1Idid");
+            migrationBuilder.CreateTable(
+                name: "GoalScorers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PlayerId = table.Column<int>(type: "int", nullable: false),
+                    MatchId = table.Column<int>(type: "int", nullable: false),
+                    GoalsScored = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GoalScorers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GoalScorers_Matches_MatchId",
+                        column: x => x.MatchId,
+                        principalTable: "Matches",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GoalScorers_Players_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_Team2Idid",
+                name: "IX_GoalScorers_MatchId",
+                table: "GoalScorers",
+                column: "MatchId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GoalScorers_PlayerId",
+                table: "GoalScorers",
+                column: "PlayerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_Team1Id",
                 table: "Matches",
-                column: "Team2Idid");
+                column: "Team1Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_Team2Id",
+                table: "Matches",
+                column: "Team2Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Players_TeamId",
@@ -98,6 +135,9 @@ namespace EntFrmLab2.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "GoalScorers");
+
             migrationBuilder.DropTable(
                 name: "Matches");
 

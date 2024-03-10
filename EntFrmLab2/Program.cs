@@ -6,24 +6,25 @@ namespace EntFrmLab2
     {
         static void Main()
         {
+            Service service = new Service();
             Console.OutputEncoding = UTF8Encoding.UTF8;
             int choice;
             do
             {
                 Console.Clear();
                 Console.WriteLine("Меню:");
-                /*Console.WriteLine("1. Відобразити всю інформацію про команди.");
-                Console.WriteLine("2. Пошук команди за назвою.");
-                Console.WriteLine("3. Пошук команди за назвою міста.");
-                Console.WriteLine("4. Пошук команди за назвою міста та команди.");
-                Console.WriteLine("5. Відображення команди з найбільшою кількістю перемог.");
-                Console.WriteLine("6. Відображення команди з найбільшою кількістю поразок..");
-                Console.WriteLine("7. Відображення команди з найбільшою кількістю ігор у нічию..");
-                Console.WriteLine("8. Відображення команди з найбільшою кількістю забитих голів.");
-                Console.WriteLine("9. Відображення команди з найбільшою кількістю пропущених голів.");
-                Console.WriteLine("10. Додати команду.");
-                Console.WriteLine("11. Обновити дані команди.");
-                Console.WriteLine("12. Видалити команду.");*/
+                Console.WriteLine("1. Відобразити всю інформацію про команди.");
+                Console.WriteLine("2. Додати команду.");
+                Console.WriteLine("3. Додати гравця.");
+                Console.WriteLine("4. Відобразити гравців які грають в команді(Назва).");
+                Console.WriteLine("5. Додати матч.");
+                Console.WriteLine("6. Оновити дані матчу");
+                Console.WriteLine("7. Відобразити деталі матчу");
+                Console.WriteLine("8. Відобразити різницю голів");
+                Console.WriteLine("9. Відобразити матч за датою");
+                Console.WriteLine("10. Відобразити матч за командою.");
+                Console.WriteLine("11. Відобразити гравця який забив гол в цю дату.");
+                Console.WriteLine("12. Видалити матч.");
                 Console.WriteLine("0. Вийти з програми");
 
                 Console.Write("Виберіть опцію: ");
@@ -32,77 +33,42 @@ namespace EntFrmLab2
                 {
                     switch (choice)
                     {
-                        /*case 1:
-                            Service.ShowData();
-                            break;
-                        case 2:
-                            Service.SearchTeamByName();
-                            break;
-                        case 3:
-                            Service.SearchTeamsByCity();
-                            break;
-                        case 4:
-                            Service.SearchTeamByNameAndCity();
-                            break;
-                        case 5:
-                            Service.DisplayTeamWithMostWins();
-                            break;
-                        case 6:
-                            Service.DisplayTeamWithMostLosses();
-                            break;
-                        case 7:
-                            Service.DisplayTeamWithMostDraws();
-                            break;
-                        case 8:
-                            Service.DisplayTeamWithMostGoalsScored();
-                            break;
-                        case 9:
-                            Service.DisplayTeamWithMostGoalsConceded();
-                            break;
-                        case 10:
-                            Service.InsertData();
-                            break;
-                        case 11:
-                            Service.UpdateTeamData();
-                            break;
-                        case 12:
-                            Service.DeleteTeam();
-                            break;*/
+                        
                         case 1:
-                            Service.ShowData();
+                            service.ShowDataTeam();
                             break;
                         case 2:
-                            Service.InsertDataTeam();
+                            service.InsertDataTeam();
                             break;
-                        case 3:
-                            Service.InsertDataPlayer();
+                       case 3:
+                            service.InsertDataPlayer();
                             break;
                         case 4:
-                            Service.DisplayPlayersByTeamName();
+                            service.DisplayPlayersByTeamName();
                             break;
-                        case 5:
-                            Service.PopulateMatchesTable();
+                         case 5:
+                            service.PopulateMatchesTable();
                             break;
                         case 6:
-                            Service.UpdateMatch();
+                            service.UpdateMatch();
                             break;
                         case 7:
-                            Service.DisplayMatchDetails();
+                            service.DisplayMatchDetails();
                             break;
                         case 8:
-                            Service.ShowGoalDifference();
+                            service.ShowGoalDifference();
                             break;
                         case 9:
-                            Service.ShowMatchesByDate();
+                            service.ShowMatchesByDate();
                             break;
                         case 10:
-                            Service.ShowMatchesByTeam();
+                            service.ShowMatchesByTeam();
                             break;
                         case 11:
-                            Service.ShowGoalScorersByDate();
+                            service.ShowGoalScorersByDate();
                             break;
                         case 12:
-                            Service.DeleteMatch();
+                            service.DeleteMatch();
                             break;
                         case 0:
                             Console.WriteLine("Poka!");

@@ -1,12 +1,19 @@
 ﻿using EntFrmLab2.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 
 namespace EntFrmLab2.DAL
 {
-    public class Context:DbContext
+    public class Context : DbContext
     {
+        /*public Context(DbContextOptions<Context> options) : base(options)
+        {
+
+        }*/
+        public Context()
+        {
+
+        }
         public DbSet<Team> Teams { get; set; }
         public DbSet<Match> Matches { get; set; }
         public DbSet<Player> Players { get; set; }
@@ -14,27 +21,31 @@ namespace EntFrmLab2.DAL
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            if (!optionsBuilder.IsConfigured)
+            {
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(AppContext.BaseDirectory)
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-            var configuration = builder.Build();
+                var configuration = builder.Build();
 
-            var connectString = configuration.GetConnectionString("DefaultConnection");
+                var connectString = configuration.GetConnectionString("DefaultConnection");
 
-            optionsBuilder.UseSqlServer(connectString);
+                optionsBuilder.UseSqlServer(connectString);
+
+            }
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Match>()
-                .HasOne<Team>(f => f.Team1Id)
+                .HasOne<Team>(f => f.Team1)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Match>()
-                .HasOne<Team>(f => f.Team2Id)
+                .HasOne<Team>(f => f.Team2)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 

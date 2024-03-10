@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntFrmLab2", "EntFrmLab2\EntFrmLab2.csproj", "{0BC03868-D391-4D2B-B845-714BF539B38F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntFrmLab2", "EntFrmLab2\EntFrmLab2.csproj", "{0BC03868-D391-4D2B-B845-714BF539B38F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntFrmLab2.DAL", "EntFrmLab2.DAL\EntFrmLab2.DAL.csproj", "{1AD44BF3-9372-4C8A-843D-949B2BEEFEB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntFrmLab2.DAL", "EntFrmLab2.DAL\EntFrmLab2.DAL.csproj", "{1AD44BF3-9372-4C8A-843D-949B2BEEFEB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntFrmLab2.Test", "EntFrmLab2.Test\EntFrmLab2.Test.csproj", "{179ED84D-D1CD-4C0D-B90B-3C124D6308FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{1AD44BF3-9372-4C8A-843D-949B2BEEFEB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1AD44BF3-9372-4C8A-843D-949B2BEEFEB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1AD44BF3-9372-4C8A-843D-949B2BEEFEB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{179ED84D-D1CD-4C0D-B90B-3C124D6308FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{179ED84D-D1CD-4C0D-B90B-3C124D6308FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{179ED84D-D1CD-4C0D-B90B-3C124D6308FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{179ED84D-D1CD-4C0D-B90B-3C124D6308FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

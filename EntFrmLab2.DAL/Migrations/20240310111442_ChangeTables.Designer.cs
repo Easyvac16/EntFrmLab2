@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntFrmLab2.DAL.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20240304202742_ICollectionToList")]
-    partial class ICollectionToList
+    [Migration("20240310111442_ChangeTables")]
+    partial class ChangeTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -47,7 +47,7 @@ namespace EntFrmLab2.DAL.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("GoalScorer");
+                    b.ToTable("GoalScorers");
                 });
 
             modelBuilder.Entity("EntFrmLab2.DAL.Models.Match", b =>
@@ -67,17 +67,17 @@ namespace EntFrmLab2.DAL.Migrations
                     b.Property<DateTime>("MatchDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Team1Idid")
+                    b.Property<int>("Team1Id")
                         .HasColumnType("int");
 
-                    b.Property<int>("Team2Idid")
+                    b.Property<int>("Team2Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Team1Idid");
+                    b.HasIndex("Team1Id");
 
-                    b.HasIndex("Team2Idid");
+                    b.HasIndex("Team2Id");
 
                     b.ToTable("Matches");
                 });
@@ -123,6 +123,10 @@ namespace EntFrmLab2.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"), 1L, 1);
 
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("GameLoss")
                         .HasColumnType("int");
 
@@ -135,16 +139,12 @@ namespace EntFrmLab2.DAL.Migrations
                     b.Property<int>("MissedHeads")
                         .HasColumnType("int");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ScoredGoals")
                         .HasColumnType("int");
-
-                    b.Property<string>("TeamCity")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TeamName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
@@ -172,21 +172,21 @@ namespace EntFrmLab2.DAL.Migrations
 
             modelBuilder.Entity("EntFrmLab2.DAL.Models.Match", b =>
                 {
-                    b.HasOne("EntFrmLab2.DAL.Models.Team", "Team1Id")
+                    b.HasOne("EntFrmLab2.DAL.Models.Team", "Team1")
                         .WithMany()
-                        .HasForeignKey("Team1Idid")
+                        .HasForeignKey("Team1Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EntFrmLab2.DAL.Models.Team", "Team2Id")
+                    b.HasOne("EntFrmLab2.DAL.Models.Team", "Team2")
                         .WithMany()
-                        .HasForeignKey("Team2Idid")
+                        .HasForeignKey("Team2Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Team1Id");
+                    b.Navigation("Team1");
 
-                    b.Navigation("Team2Id");
+                    b.Navigation("Team2");
                 });
 
             modelBuilder.Entity("EntFrmLab2.DAL.Models.Player", b =>

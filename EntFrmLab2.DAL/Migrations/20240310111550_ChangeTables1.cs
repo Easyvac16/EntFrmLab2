@@ -4,7 +4,7 @@
 
 namespace EntFrmLab2.DAL.Migrations
 {
-    public partial class ICollectionToList : Migration
+    public partial class ChangeTables1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

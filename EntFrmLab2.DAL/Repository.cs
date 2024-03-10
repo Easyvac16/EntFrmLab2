@@ -1,38 +1,60 @@
 ﻿using EntFrmLab2.DAL.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EntFrmLab2.DAL
 {
     public class Repository<TEntity> where TEntity : class
     {
-        private static readonly Context _context;
+        private readonly Context _context;
 
         public Repository()
         {
             _context = new Context();
         }
+        /*public Repository(DbContextOptions options)  
+        {
+            _context = new Context(options);
+        }*/
 
-        public static void Add(TEntity entity)
+        public void Add(TEntity entity)
         {
             _context.Set<TEntity>().Add(entity);
 
             _context.SaveChanges();
         }
+        public IEnumerable<TEntity> GetAll()
+        {
+            return _context.Set<TEntity>();
+        }
 
-        public IQueryable<Team> GetTeams()
+        public void Remove(int id)
+        {
+            var entity = _context.Set<TEntity>().Find(id);
+
+            _context.Set<TEntity>().Remove(entity);
+
+            _context.SaveChanges();
+        }
+
+        public void Update(int id, TEntity entity)
+        {
+            var existingEntity = _context.Set<TEntity>().Find(id);
+
+            _context.Entry(existingEntity).CurrentValues
+                .SetValues(entity);
+
+            _context.SaveChanges();
+        }
+
+        /* public IEnumerable<Team> GetTeams()
         {
             return _context.Teams;
         }
 
-        public IQueryable<Player> GetPlayers()
+        public IEnumerable<Player> GetPlayers()
         {
             return _context.Players;
-        }
+        }*/
 
 
     }
