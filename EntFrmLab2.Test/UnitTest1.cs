@@ -16,10 +16,10 @@ namespace EntFrmLab2.Test
             var options = new DbContextOptionsBuilder<Context>()
                 .UseInMemoryDatabase(databaseName: "Univer")
                 .Options;
-            /*_teamRepository = new Repository<Team>(options);
+            _teamRepository = new Repository<Team>(options);
             _playerRepository = new Repository<Player>(options);
             _matchRepository = new Repository<Match>(options);
-            _scorerRepository = new Repository<GoalScorer>(options);*/
+            _scorerRepository = new Repository<GoalScorer>(options);
         }
 
         /*[Fact]
@@ -107,7 +107,227 @@ namespace EntFrmLab2.Test
 
             }
         }*/
-        public void PopulateMatchesTable()
+        public void DisplayTopScorers()
+        {
+            Console.WriteLine("Write Team Name:");
+            string teamName = Console.ReadLine();
+
+            var topScorers = _scorerRepository.GetAll()
+            .AsQueryable()
+            .Include(s => s.Player)
+            .Include(s => s.Match)
+            .Where(s => s.Player.Team.Name == teamName)
+            .ToList()
+            .GroupBy(s => s.Player)
+            .Select(g => new { Player = g.Key, GoalsScored = g.Sum(s => s.GoalsScored) })
+            .OrderByDescending(g => g.GoalsScored)
+            .Take(3)
+            .ToList();
+
+
+            Console.WriteLine($"Топ-3 найкращих бомбардирів команди '{teamName}':");
+            foreach (var scorer in topScorers)
+            {
+                Console.WriteLine($"Ім'я: {scorer.Player.FullName}, Кількість забитих м'ячів: {scorer.GoalsScored}");
+            }
+        }
+
+        public void DisplayTopScorer()
+        {
+
+            Console.WriteLine("Write Team Name:");
+            string teamName = Console.ReadLine();
+
+            var topScorer = _scorerRepository.GetAll()
+                .AsQueryable()
+                .Include(s => s.Player)
+                .Where(s => s.Player.Team.Name == teamName)
+                .OrderByDescending(s => s.GoalsScored)
+                .FirstOrDefault();
+
+            if (topScorer != null)
+            {
+                Console.WriteLine($"Найкращий бомбардир команди '{teamName}':");
+                Console.WriteLine($"Ім'я: {topScorer.Player.FullName}, Кількість забитих м'ячів: {topScorer.GoalsScored}");
+            }
+            else
+            {
+                Console.WriteLine($"Бомбардирів команди '{teamName}' не знайдено.");
+            }
+        }
+
+        public void DisplayTopScorersOverall()
+        {
+            var topScorers = _scorerRepository.GetAll()
+                .AsQueryable()
+                .Include(s => s.Player)
+                .AsEnumerable()
+                .GroupBy(s => s.Player)
+                .Select(g => new { Player = g.Key, TotalGoals = g.Sum(s => s.GoalsScored) })
+                .OrderByDescending(g => g.TotalGoals)
+                .Take(3)
+                .ToList();
+
+            Console.WriteLine("Топ-3 найкращих бомбардирів усього чемпіонату:");
+            foreach (var scorer in topScorers)
+            {
+                Console.WriteLine($"Ім'я: {scorer.Player.FullName}, Кількість забитих м'ячів: {scorer.TotalGoals}");
+            }
+        }
+
+        public void DisplayTopScorerOverall()
+        {
+            var topScorer = _scorerRepository.GetAll()
+                .AsQueryable()
+                .Include(s => s.Player)
+                .GroupBy(s => s.Player)
+                .Select(g => new { Player = g.Key, TotalGoals = g.Sum(s => s.GoalsScored) })
+                .OrderByDescending(g => g.TotalGoals)
+                .FirstOrDefault();
+
+            if (topScorer != null && topScorer.Player != null)
+            {
+                Console.WriteLine($"Найкращий бомбардир усього чемпіонату: {topScorer.Player.FullName}, Кількість забитих м'ячів: {topScorer.TotalGoals}");
+            }
+            else
+            {
+                Console.WriteLine("Інформація про найкращого бомбардира відсутня.");
+            }
+        }
+
+        public void DisplayTopTeamsByPoints()
+        {
+            var topTeams = _teamRepository.GetAll()
+                .OrderByDescending(t => (t.GameWin * 3) + t.GameTie)
+                .Take(3)
+                .ToList();
+
+            Console.WriteLine("Топ-3 команди за кількістю очок:");
+            foreach (var team in topTeams)
+            {
+                int points = (team.GameWin * 3) + team.GameTie;
+                Console.WriteLine($"Команда: {team.Name}, Очки: {points}");
+            }
+        }
+
+
+        public void DisplayTopTeamByPoints()
+        {
+            var topTeam = _teamRepository.GetAll()
+                .OrderByDescending(t => (t.GameWin * 3) + t.GameTie)
+                .FirstOrDefault();
+
+            if (topTeam != null)
+            {
+                int points = (topTeam.GameWin * 3) + topTeam.GameTie;
+                Console.WriteLine($"Команда з найбільшою кількістю очок: {topTeam.Name}, Очки: {points}");
+            }
+            else
+            {
+                Console.WriteLine("Не вдалося знайти команду.");
+            }
+        }
+
+        public void DisplayBottomTeamsByPoints()
+        {
+            var bottomTeams = _teamRepository.GetAll()
+                .OrderBy(t => (t.GameWin * 3) + t.GameTie)
+                .Take(3)
+                .ToList();
+
+            if (bottomTeams.Any())
+            {
+                Console.WriteLine("Топ-3 команди з найменшою кількістю очок:");
+                foreach (var team in bottomTeams)
+                {
+                    int points = (team.GameWin * 3) + team.GameTie;
+                    Console.WriteLine($"Команда: {team.Name}, Очки: {points}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Не вдалося знайти команди.");
+            }
+        }
+
+        public void DisplayTeamWithLeastPoints()
+        {
+            var teamWithLeastPoints = _teamRepository.GetAll()
+                .OrderBy(t => (t.GameWin * 3) + t.GameTie)
+                .FirstOrDefault();
+
+            if (teamWithLeastPoints != null)
+            {
+                int points = (teamWithLeastPoints.GameWin * 3) + teamWithLeastPoints.GameTie;
+                Console.WriteLine($"Команда з найменшою кількістю очок: {teamWithLeastPoints.Name}, Очки: {points}");
+            }
+            else
+            {
+                Console.WriteLine("Не вдалося знайти команду.");
+            }
+        }
+
+        public void DisplayTopScoringTeams()
+        {
+            var topScoringTeams = _teamRepository.GetAll()
+                .OrderByDescending(t => t.ScoredGoals)
+                .Take(3)
+                .ToList();
+
+            Console.WriteLine("Топ-3 команди, які забили найбільше голів:");
+            foreach (var team in topScoringTeams)
+            {
+                Console.WriteLine($"Команда: {team.Name}, Забиті голи: {team.ScoredGoals}");
+            }
+        }
+
+        public void DisplayTeamWithMostGoals()
+        {
+            var teamWithMostGoals = _teamRepository.GetAll()
+                .OrderByDescending(t => t.ScoredGoals)
+                .FirstOrDefault();
+
+            if (teamWithMostGoals != null)
+            {
+                Console.WriteLine($"Команда, яка забила найбільше голів: {teamWithMostGoals.Name}, Забиті голи: {teamWithMostGoals.ScoredGoals}");
+            }
+            else
+            {
+                Console.WriteLine("Не вдалося знайти команду.");
+            }
+        }
+
+        public void DisplayTopDefensiveTeams()
+        {
+            var topDefensiveTeams = _teamRepository.GetAll()
+                .OrderBy(t => t.MissedHeads)
+                .Take(3)
+                .ToList();
+
+            Console.WriteLine("Топ-3 команди, які пропустили найменше голів:");
+            foreach (var team in topDefensiveTeams)
+            {
+                Console.WriteLine($"Команда: {team.Name}, Пропущені голи: {team.MissedHeads}");
+            }
+        }
+
+        public void DisplayTeamWithLeastGoalsConceded()
+        {
+            var teamWithLeastGoalsConceded = _teamRepository.GetAll()
+                .OrderBy(t => t.MissedHeads)
+                .FirstOrDefault();
+
+            if (teamWithLeastGoalsConceded != null)
+            {
+                Console.WriteLine($"Команда, яка пропустила найменше голів: {teamWithLeastGoalsConceded.Name}, Пропущені голи: {teamWithLeastGoalsConceded.MissedHeads}");
+            }
+            else
+            {
+                Console.WriteLine("Не вдалося знайти команду.");
+            }
+        }
+
+        /*public void PopulateMatchesTable()
         {
             Match match = new Match();
 
@@ -158,7 +378,7 @@ namespace EntFrmLab2.Test
             //AddGoalScorersToMatch(match.Id);
 
             Console.WriteLine("Matches added successfully.");
-        }
+        }*/
 
         [Fact]
         public void CreateTableTestRepository()
@@ -196,8 +416,6 @@ namespace EntFrmLab2.Test
             };
             Match match = new Match()
             {
-                Team1 = team1,
-                Team2 = team2,
                 GoalsTeam1 = 150,
                 GoalsTeam2 = 60
             };
@@ -256,6 +474,20 @@ namespace EntFrmLab2.Test
             Assert.Equal(1, _matchRepository.GetAll().ToList().Count);
             Assert.Equal(match.GoalsTeam1, matchO.GoalsTeam1);
             Assert.Equal(match.GoalsTeam2, matchO.GoalsTeam2);
+
+            /*DisplayTopScorerOverall();
+            DisplayTopScorer();
+            DisplayTopScorers();*/
+            DisplayBottomTeamsByPoints();
+            DisplayTeamWithLeastPoints();
+            DisplayTopTeamByPoints();
+            DisplayTopTeamsByPoints();
+            DisplayTopScorersOverall();
+            DisplayTopScoringTeams();
+            DisplayTeamWithMostGoals();
+            DisplayTopDefensiveTeams();
+            DisplayTeamWithLeastGoalsConceded();
+
         }
     }
 }

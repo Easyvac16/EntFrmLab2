@@ -25,6 +25,21 @@ namespace EntFrmLab2
                 Console.WriteLine("10. Відобразити матч за командою.");
                 Console.WriteLine("11. Відобразити гравця який забив гол в цю дату.");
                 Console.WriteLine("12. Видалити матч.");
+                Console.WriteLine("DZ4_________________________________");
+                Console.WriteLine("13. Відобразити Топ-3 найкращих бомбардирів конкретної команди..");
+                Console.WriteLine("14.Відобразити найкращого бомбардира конкретної команди.");
+                Console.WriteLine("15.Відобразити Топ-3 найкращих бомбардирів усього чемпіонату.");
+                Console.WriteLine("16.Відобразити найкращого бомбардира усього чемпіонату");
+                Console.WriteLine("17.Відобразити Топ-3 команди, які набрали найбільше очок");
+                Console.WriteLine("18.Відобразити команду, яка набрала найбільше очок");
+                Console.WriteLine("19.Відобразити Топ-3 команди, які набрали найменшу кількість очок. ");
+                Console.WriteLine("20.Відобразити команду, яка набрала найменшу кількість очок ");
+                Console.WriteLine("21.Відобразити Топ-3 команди, які забили найбільше голів ");
+                Console.WriteLine("22.Відобразити команду, яка забила найбільше голів ");
+                Console.WriteLine("23.Відобразити Топ-3 команди, які пропустили найменше голів ");
+                Console.WriteLine("24.Відобразити команду, яка пропустила найменше голів ");
+
+
                 Console.WriteLine("0. Вийти з програми");
 
                 Console.Write("Виберіть опцію: ");
@@ -72,6 +87,39 @@ namespace EntFrmLab2
                             break;
                         case 13:
                             service.DisplayTopScorers();
+                            break;
+                        case 14:
+                            service.DisplayTopScorer();
+                            break;
+                        case 15:
+                            service.DisplayTopScorersOverall();
+                            break;
+                        case 16:
+                            service.DisplayTopScorerOverall();
+                            break;
+                        case 17:
+                            service.DisplayTopTeamsByPoints();
+                            break;
+                        case 18:
+                            service.DisplayTopTeamByPoints();
+                            break;
+                        case 19:
+                            service.DisplayBottomTeamsByPoints();
+                            break;
+                        case 20:
+                            service.DisplayTeamWithLeastPoints();
+                            break;
+                        case 21:
+                            service.DisplayTopScoringTeams();
+                            break;
+                        case 22:
+                            service.DisplayTeamWithMostGoals();
+                            break;
+                        case 23:
+                            service.DisplayTopDefensiveTeams();
+                            break;
+                        case 24:
+                            service.DisplayTeamWithLeastGoalsConceded();
                             break;
                         case 0:
                             Console.WriteLine("Poka!");

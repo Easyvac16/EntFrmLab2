@@ -11,10 +11,10 @@ namespace EntFrmLab2.DAL
         {
             _context = new Context();
         }
-        /*public Repository(DbContextOptions options)  
+        public Repository(DbContextOptions options)
         {
             _context = new Context(options);
-        }*/
+        }
 
         public void Add(TEntity entity)
         {
@@ -25,6 +25,11 @@ namespace EntFrmLab2.DAL
         public IEnumerable<TEntity> GetAll()
         {
             return _context.Set<TEntity>();
+        }
+        public IEnumerable<TEntity> GetById(int id)
+        {
+            var entity = _context.Set<TEntity>().Find(id);
+            yield return entity;
         }
 
         public void Remove(int id)
